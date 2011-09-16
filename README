@@ -16,7 +16,7 @@ is welcome to contribute with ideas and code.
 TODO:
 ================================================================================
 
-There's a lot of things to do. At the top of mind, I can cite:
+There's a lot of things to do. At the top of my mind, I can cite:
 
 - encapsulate inside a function the execution of "chrooted" commands;
 - give more liberty to choose the bootloader;
