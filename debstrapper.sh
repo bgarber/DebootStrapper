@@ -108,21 +108,28 @@ if [ "$home" = "Y" ] || [ "$home" = "y" ]; then
     if [ -z $home_fs ]; then
         home_fs='ext4'
     fi
-    echo -n "What is the label for this partition [\"\"]?"
-    read label
-    if [ -z $label ]; then
-        mke2fs -t $home_fs $home
-    else
-        mke2fs -t $home_fs -L "$label" $home
+    echo -n "Do you want to format the home partition (y/N)? "
+    read format
+    if [ -z $format ]; then
+        format=n
     fi
-    if [ $? -ne 0 ]; then
-        echo "There was some error formatting the partition."
-        echo "Please, verify if the data you provided is valid:"
-        echo -n "  Home partition: "
-        echo $root
-        echo -n "  FS for the partition: "
-        echo $home_fs
-        exit 1
+    if [ $format = 'Y' ] || [ $format = 'y' ]; then
+        echo -n "What is the label for this partition [\"\"]?"
+        read label
+        if [ -z $label ]; then
+            mke2fs -t $home_fs $home
+        else
+            mke2fs -t $home_fs -L "$label" $home
+        fi
+        if [ $? -ne 0 ]; then
+            echo "There was some error formatting the partition."
+            echo "Please, verify if the data you provided is valid:"
+            echo -n "  Home partition: "
+            echo $root
+            echo -n "  FS for the partition: "
+            echo $home_fs
+            exit 1
+        fi
     fi
 else
     echo "It's a good practice to keep your home directory separated, but ok.:)"
