@@ -18,6 +18,7 @@ TODO:
 
 There's a lot of things to do. At the top of my mind, I can cite:
 
+- the script is FORMATTING the /home PARTITION;
 - encapsulate inside a function the execution of "chrooted" commands;
 - give more liberty to choose the bootloader;
 - full automatization of the installation process, via config file.
