@@ -1,0 +1,24 @@
+DebootStrapper - tool to help creating custom installations of Debian.
+
+================================================================================
+!!!!!WARNING!!!!!
+================================================================================
+
+This script is VERY DANGEROUS. It can (and potentially WILL) cause data loss if
+you DON'T KNOW WHAT YOU'RE DOING! You can 'play' with it on a virtual machine, but
+be at your own risk while trying to use it on a real machine! Keep in mind that
+this method of installation is for experienced users.
+
+At this moment, my judgement is that this script is still VERY UNSTABLE. Anyone
+is welcome to contribute with ideas and code.
+
+================================================================================
+TODO:
+================================================================================
+
+There's a lot of things to do. At the top of mind, I can cite:
+
+- encapsulate inside a function the execution of "chrooted" commands;
+- give more liberty to choose the bootloader;
+- full automatization of the installation process, via config file.
+
