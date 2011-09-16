@@ -15,6 +15,14 @@
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+do_chrooted()
+{
+    # $1 == the command to execute
+    # $2 == path to dir
+    chroot $2 /bin/bash -c "$1"
+    return $?
+}
+
 # Check if we have the necessary tools.
 debootstrap --help >/dev/null
 if [ $? -ne 0 ]; then
@@ -189,8 +197,8 @@ case $arch in
     3)arch="amd64";;
 esac
 linux="linux-image-$arch"
-echo "apt-get update ; exit" | chroot $mount_dir
-echo "apt-get -y install $linux ; exit" | chroot $mount_dir
+do_chrooted("apt-get update", $mount_dir)
+do_chrooted("apt-get -y install $linux", $mount_dir)
 #==============================================================================#
 
 #============ Configuring the /etc/fstab ======================================#
@@ -206,10 +214,10 @@ fi
 #==============================================================================#
 
 # Create the device files
-echo "mknod /dev/sda  b 8 0 ; exit" | chroot $mount_dir
-echo "mknod /dev/sda1 b 8 1 ; exit" | chroot $mount_dir
-echo "mknod /dev/sda2 b 8 2 ; exit" | chroot $mount_dir
-echo "mknod /dev/sda3 b 8 3 ; exit" | chroot $mount_dir
+do_chrooted("mknod /dev/sda  b 8 0", $mount_dir)
+do_chrooted("mknod /dev/sda1 b 8 1", $mount_dir)
+do_chrooted("mknod /dev/sda2 b 8 2", $mount_dir)
+do_chrooted("mknod /dev/sda3 b 8 3", $mount_dir)
 
 #============ Configuring and installing GRUB =================================#
 echo "apt-get -y install grub2 ; exit" | chroot $mount_dir
@@ -234,7 +242,7 @@ if [ -z $net_man ]; then
     net_man='y'
 fi
 if [ $net_man = 'Y' ] || [ $net_man = 'y' ]; then
-    echo "apt-get -y install network-manager ; exit" | chroot $mount_dir
+    do_chrooted("apt-get -y install network-manager", $mount_dir)
 else
     echo "Well, I will rely that you know what you're doing here."
     echo -n "Entry with the name of the package [network-manager]: "
@@ -242,20 +250,19 @@ else
     if [ -z $net_man ]; then
         net_man='network-manager'
     fi
-    echo "apt-get -y install $net_man ; exit" | chroot $mount_dir
+    do_chrooted("apt-get -y install $net_man", $mount_dir)
 fi
 #==============================================================================#
 
 #============ Configuring time and locales ====================================#
-echo "apt-get -y install console-data locales locales-all tzdata ; exit" \
-    | chroot $mount_dir
-chroot $mount_dir /bin/sh -c "dpkg-reconfigure locales"
-chroot $mount_dir /bin/sh -c "dpkg-reconfigure tzdata"
+do_chrooted("apt-get -y install console-data locales locales-all tzdata", $mount_dir)
+do_chrooted("dpkg-reconfigure locales", $mount_dir)
+do_chrooted("dpkg-reconfigure tzdata", $mount_dir)
 #==============================================================================#
 
 #============ Configuring root and a new user =================================#
 echo "Configuring the root user password."
-chroot $mount_dir /bin/sh -c "passwd" 
+do_chrooted("passwd", $mount_dir)
 echo -n "Add any new user (Y/n)? "
 read user
 if [ -z $user ]; then
@@ -268,14 +275,14 @@ if [ $user = 'Y' ] || [ $user = 'y' ]; then
         echo -n "Type a valid name for the user: "
         read user
     done
-    chroot $mount_dir /bin/sh -c "adduser $user" 
+    do_chrooted("adduser $user", $mount_dir)
     echo -n "Groups for the new user [cdrom audio video plugdev netdev]: "
     read groups
     if [ -z $groups ]; then
         groups='cdrom audio video plugdev netdev'
     fi
     for g in $groups; do
-        echo "adduser $user $g" | chroot $mount_dir
+        do_chrooted("adduser $user $g", $mount_dir)
     done
 fi
 #==============================================================================#
@@ -293,13 +300,13 @@ if [ $pack = 'Y' ] || [ $pack = 'y' ]; then
     if [ -z $pack ]; then
         pack='vim make gcc'
     fi
-    echo "apt-get -y install $pack ; exit" | chroot $mount_dir
+    do_chrooted("apt-get -y install $pack", $mount_dir)
 fi
 #==============================================================================#
 
 # Clean everything
 echo "Cleaning everything..."
-echo "apt-get clean ; exit" | chroot $mount_dir
+do_chrooted("apt-get clean", $mount_dir)
 umount $mount_dir
 echo "It's time to reboot and enjoy the new system! :-)"
 echo "Don't forget to edit the /etc/apt/sources.list to add other Debian repositories."
