@@ -19,5 +19,6 @@ TODO:
 There's a lot of things to do. At the top of my mind, I can cite:
 
 - give more liberty to choose the bootloader;
-- full automatization of the installation process, via config file.
-
+- full automatization of the installation process, via config file,
+- checkpoints - possibility of restarting the installation from a specific
+  point.
