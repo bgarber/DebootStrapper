@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright    2011    Bryan Garber da Silva
 
@@ -44,17 +44,17 @@ if [ "$conf" = "Y" ] || [ "$conf" = "y" ]; then
 fi
 
 #============ Configuring the ROOT partition ==================================#
-echo -n "Please, type in the partition you want to install [/dev/sda1]:"
+echo -n "Please, type in the partition you want to install [/dev/sda1]: "
 read root
 if [ -z $root ]; then
     root='/dev/sda1'
 fi
-echo -n "What is the file system for this partition [ext4]?"
+echo -n "What is the file system for this partition [ext4]? "
 read root_fs
 if [ -z $root_fs ]; then
     root_fs='ext4'
 fi
-echo -n "What is the label for this partition [\"\"]?"
+echo -n "What is the label for this partition [\"\"]? "
 read label
 if [ -z $label ]; then
     mke2fs -t $root_fs $root
@@ -73,14 +73,14 @@ fi
 #==============================================================================#
 
 #============ Configuring the SWAP partition ==================================#
-echo -n "There is any swap partition (Y/n)?"
+echo -n "There is any swap partition (Y/n)? "
 read swap
 if [ -z $swap ]; then
     swap=y
 fi
 if [ "$swap" = "Y" ] || [ "$swap" = "y" ]; then
     with_swap=y
-    echo -n "Great! Where is the swap partition located [/dev/sda2]?"
+    echo -n "Great! Where is the swap partition located [/dev/sda2]? "
     read swap
     if [ -z $swap ]; then
         swap='/dev/sda2'
@@ -99,19 +99,19 @@ fi
 #==============================================================================#
 
 #============ Configuring the HOME partition ==================================#
-echo -n "The home will reside on a separate partition (Y/n)?"
+echo -n "The home will reside on a separate partition (Y/n)? "
 read home
 if [ -z $home ]; then
     home=y
 fi
 if [ "$home" = "Y" ] || [ "$home" = "y" ]; then
     with_home=y
-    echo -n "Great! Where is the home partition located [/dev/sda3]?"
+    echo -n "Great! Where is the home partition located [/dev/sda3]? "
     read home
     if [ -z $home ]; then
         home='/dev/sda3'
     fi
-    echo -n "What is the file system for this partition [ext4]?"
+    echo -n "What is the file system for this partition [ext4]? "
     read home_fs
     if [ -z $home_fs ]; then
         home_fs='ext4'
@@ -122,7 +122,7 @@ if [ "$home" = "Y" ] || [ "$home" = "y" ]; then
         format=n
     fi
     if [ $format = 'Y' ] || [ $format = 'y' ]; then
-        echo -n "What is the label for this partition [\"\"]?"
+        echo -n "What is the label for this partition [\"\"]? "
         read label
         if [ -z $label ]; then
             mke2fs -t $home_fs $home
@@ -153,7 +153,7 @@ if [ $? -ne 0 ]; then
 fi
 
 #============ Configuring the Bootstrap repo ==================================#
-echo -n "Debian distribution [testing]:"
+echo -n "Debian distribution [testing]: "
 read distro
 if [ -z $distro ]; then
     distro='testing'
@@ -197,8 +197,8 @@ case $arch in
     3)arch="amd64";;
 esac
 linux="linux-image-$arch"
-do_chrooted("apt-get update", $mount_dir)
-do_chrooted("apt-get -y install $linux", $mount_dir)
+do_chrooted "apt-get update" $mount_dir
+do_chrooted "apt-get -y install $linux" $mount_dir
 #==============================================================================#
 
 #============ Configuring the /etc/fstab ======================================#
@@ -214,13 +214,13 @@ fi
 #==============================================================================#
 
 # Create the device files
-do_chrooted("mknod /dev/sda  b 8 0", $mount_dir)
-do_chrooted("mknod /dev/sda1 b 8 1", $mount_dir)
-do_chrooted("mknod /dev/sda2 b 8 2", $mount_dir)
-do_chrooted("mknod /dev/sda3 b 8 3", $mount_dir)
+do_chrooted "mknod /dev/sda  b 8 0" $mount_dir
+do_chrooted "mknod /dev/sda1 b 8 1" $mount_dir
+do_chrooted "mknod /dev/sda2 b 8 2" $mount_dir
+do_chrooted "mknod /dev/sda3 b 8 3" $mount_dir
 
 #============ Configuring and installing GRUB =================================#
-echo "apt-get -y install grub2 ; exit" | chroot $mount_dir
+do_chrooted "apt-get -y install grub2" $mount_dir
 #==============================================================================#
 
 #============ Configuring the network =========================================#
@@ -242,7 +242,7 @@ if [ -z $net_man ]; then
     net_man='y'
 fi
 if [ $net_man = 'Y' ] || [ $net_man = 'y' ]; then
-    do_chrooted("apt-get -y install network-manager", $mount_dir)
+    do_chrooted "apt-get -y install network-manager" $mount_dir
 else
     echo "Well, I will rely that you know what you're doing here."
     echo -n "Entry with the name of the package [network-manager]: "
@@ -250,19 +250,19 @@ else
     if [ -z $net_man ]; then
         net_man='network-manager'
     fi
-    do_chrooted("apt-get -y install $net_man", $mount_dir)
+    do_chrooted "apt-get -y install $net_man" $mount_dir
 fi
 #==============================================================================#
 
 #============ Configuring time and locales ====================================#
-do_chrooted("apt-get -y install console-data locales locales-all tzdata", $mount_dir)
-do_chrooted("dpkg-reconfigure locales", $mount_dir)
-do_chrooted("dpkg-reconfigure tzdata", $mount_dir)
+do_chrooted "apt-get -y install console-data locales locales-all tzdata" $mount_dir
+do_chrooted "dpkg-reconfigure locales" $mount_dir
+do_chrooted "dpkg-reconfigure tzdata" $mount_dir
 #==============================================================================#
 
 #============ Configuring root and a new user =================================#
 echo "Configuring the root user password."
-do_chrooted("passwd", $mount_dir)
+do_chrooted "passwd" $mount_dir
 echo -n "Add any new user (Y/n)? "
 read user
 if [ -z $user ]; then
@@ -275,14 +275,14 @@ if [ $user = 'Y' ] || [ $user = 'y' ]; then
         echo -n "Type a valid name for the user: "
         read user
     done
-    do_chrooted("adduser $user", $mount_dir)
+    do_chrooted "adduser $user" $mount_dir
     echo -n "Groups for the new user [cdrom audio video plugdev netdev]: "
     read groups
     if [ -z $groups ]; then
         groups='cdrom audio video plugdev netdev'
     fi
     for g in $groups; do
-        do_chrooted("adduser $user $g", $mount_dir)
+        do_chrooted "adduser $user $g", $mount_dir
     done
 fi
 #==============================================================================#
@@ -300,13 +300,13 @@ if [ $pack = 'Y' ] || [ $pack = 'y' ]; then
     if [ -z $pack ]; then
         pack='vim make gcc'
     fi
-    do_chrooted("apt-get -y install $pack", $mount_dir)
+    do_chrooted "apt-get -y install $pack" $mount_dir
 fi
 #==============================================================================#
 
 # Clean everything
 echo "Cleaning everything..."
-do_chrooted("apt-get clean", $mount_dir)
+do_chrooted "apt-get clean" $mount_dir
 umount $mount_dir
 echo "It's time to reboot and enjoy the new system! :-)"
 echo "Don't forget to edit the /etc/apt/sources.list to add other Debian repositories."
