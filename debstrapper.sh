@@ -282,7 +282,7 @@ if [ $user = 'Y' ] || [ $user = 'y' ]; then
         groups='cdrom audio video plugdev netdev'
     fi
     for g in $groups; do
-        do_chrooted "adduser $user $g", $mount_dir
+        do_chrooted "adduser $user $g" $mount_dir
     done
 fi
 #==============================================================================#
