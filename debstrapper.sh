@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright    2011    Bryan Garber da Silva
+# Copyright    2011-2012        Bryan Garber da Silva
 
 #This program is free software: you can redistribute it and/or modify
 #it under the terms of the GNU General Public License as published by
