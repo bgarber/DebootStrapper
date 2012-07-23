@@ -15,21 +15,61 @@
 
 # This is the main function for running the DebootStrapper.
 
+require 'Config'
+
+SUCCESS = 0
+ERROR   = 1
+
 class Main
     def initialize (conf)
-        @config = conf
+        @config = Config.new(conf)
     end
 
-    def exec ()
+    def ask_yes_no (question)
+        printf("%s [Y/n] ", question)
+        answer = gets
+        if answer.downcase == "y" then
+            answer = "y"
+        else
+            answer = "n"
+        end
+        yield(answer)
+    end
+
+    def run ()
         # Check for debootstrap
-        # Do disk partitioning
+        %x[debootstrap --help > /dev/null]
+        last_rc = %x[echo $?] # the last return code
+        if last_rc == 0 then
+            if @config.install_tools then
+                %x[apt-get install debootstrap]
+            else
+                ask_yes_no("The debootstrap tool wasn't found. " +
+                    "Should I install it?") { | answer |
+                    if answer = "y" then
+                        %x[apt-get install debootstrap]
+                        last_rc = %x[echo $?]
+                        if last_rc then
+                            puts "Failed to get debootstrap, returning..."
+                            return ERROR
+                        end
+                    end
+                }
+            end
+        end
+
+        # Configure the partitions
+
         # Install basic system
         # Install boot loader
         # Configure system network and fstab
         # Create users
         # Install extra-packages
+
+        return SUCCESS
     end
 end
 
 mp = Main.new(ARGV[0])
-mp.exec
+mp.run
+
