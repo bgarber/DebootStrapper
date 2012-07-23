@@ -21,14 +21,14 @@ class Config
                 line_array = line.split(/=/)
                 case line
                     when /^INSTALL_TOOLS/
-                        if line_array[1].downcase == "yes" or
-                           line_array[1].downcase == "y" then
+                        if line_array[1].downcase.strip == "yes" or
+                           line_array[1].downcase.strip == "y" then
                             @install_tools = true
                         else
                             @install_tools = false
                         end
                     when /^BOOTLOADER/
-                        @bootloader = line_array[1]
+                        @bootloader = line_array[1].strip
                     else
                         puts "Unknown sequence of characters: #{line}"
                 end

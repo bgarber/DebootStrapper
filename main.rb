@@ -28,7 +28,7 @@ class Main
     def ask_yes_no (question)
         printf("%s [Y/n] ", question)
         answer = gets
-        if answer.downcase == "y" then
+        if answer.downcase.strip == "y" then
             answer = "y"
         else
             answer = "n"
