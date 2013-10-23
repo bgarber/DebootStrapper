@@ -16,6 +16,7 @@
 # This is the main function for running the DebootStrapper.
 
 require 'Config'
+require 'Executor'
 
 SUCCESS = 0
 ERROR   = 1
@@ -25,38 +26,12 @@ class Main
         @config = Config.new(conf)
     end
 
-    def ask_yes_no (question)
-        printf("%s [Y/n] ", question)
-        answer = gets
-        if answer.downcase.strip == "y" then
-            answer = "y"
-        else
-            answer = "n"
-        end
-        yield(answer)
-    end
-
     def run ()
+        exec = Executor.new
+
         # Check for debootstrap
-        %x[debootstrap --help > /dev/null]
-        last_rc = %x[echo $?] # the last return code
-        if last_rc == 0 then
-            if @config.install_tools then
-                %x[apt-get install debootstrap]
-            else
-                ask_yes_no("The debootstrap tool wasn't found. " +
-                    "Should I install it?") { | answer |
-                    if answer = "y" then
-                        %x[apt-get install debootstrap]
-                        last_rc = %x[echo $?]
-                        if last_rc then
-                            puts "Failed to get debootstrap, returning..."
-                            return ERROR
-                        end
-                    end
-                }
-            end
-        end
+        exec.check_debootstrap
+
 
         # Configure the partitions
 
