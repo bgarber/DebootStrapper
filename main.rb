@@ -15,36 +15,21 @@
 
 # This is the main function for running the DebootStrapper.
 
-require 'Config'
 require 'Executor'
 
 SUCCESS = 0
 ERROR   = 1
 
-class Main
-    def initialize (conf)
-        @config = Config.new(conf)
-    end
+exec = Executor.new
 
-    def run ()
-        exec = Executor.new
-
-        # Check for debootstrap
-        exec.check_debootstrap
+# Check for debootstrap
+exec.check_debootstrap
 
 
-        # Configure the partitions
-
-        # Install basic system
-        # Install boot loader
-        # Configure system network and fstab
-        # Create users
-        # Install extra-packages
-
-        return SUCCESS
-    end
-end
-
-mp = Main.new(ARGV[0])
-mp.run
+# Configure the partitions
+# Install basic system
+# Install boot loader
+# Configure system network and fstab
+# Create users
+# Install extra-packages
 

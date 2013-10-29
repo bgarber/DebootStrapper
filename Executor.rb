@@ -17,38 +17,43 @@
 
 
 class Executor
-    def initialize ()
+    def initialize (c)
+        @config = c
     end
 
     def ask_yes_no (question)
-        printf("%s [Y/n] ", question)
-        answer = gets
-        if answer.downcase.strip == "y" then
-            answer = "y"
+        puts "#{question} [Y/n] "
+        answer = gets.downcase
+        if answer == "" or answer == "y" then
+            yield(true)
         else
-            answer = "n"
+            yield(false)
         end
-        yield(answer)
+    end
+
+    def install (pkg)
+        %x[apt-get install #{pkg}]
+        return %x[echo $?]
+    end
+
+    def call_cmd (cmd)
+        %x[ #{cmd} ]
+        return %[echo $?]
     end
 
     def check_debootstrap ()
-        %x[debootstrap --help > /dev/null]
-        last_rc = %x[echo $?] # the last return code
+        last_rc = call_cmd("debootstrap --help > /dev/null")
         if last_rc == 0 then
             if @config.install_tools then
-                %x[apt-get install debootstrap]
+                install("debootstrap")
             else
-                ask_yes_no("The debootstrap tool wasn't found. " +
-                    "Should I install it?") { | answer |
-                    if answer = "y" then
-                        %x[apt-get install debootstrap]
-                        last_rc = %x[echo $?]
-                        if last_rc then
-                            puts "Failed to get debootstrap, returning..."
-                            return ERROR
-                        end
+                if ask_yes_no("The debootstrap tool wasn't found. Should I install it?") then
+                    last_rc = install('debootstrap')
+                    if last_rc then
+                        puts "Failed to get debootstrap, returning..."
+                        return ERROR
                     end
-                }
+                end
             end
         end
     end
