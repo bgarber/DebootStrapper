@@ -19,7 +19,7 @@ module Exec
     def Exec.ask_yes_no (question)
         print "#{question} [Y/n] "
         answer = gets.downcase.strip
-        if answer.empty? or answer.eq? "y" then
+        if answer.empty? or answer.eql? "y" or answer.eql? "yes"
             return true
         else
             return false

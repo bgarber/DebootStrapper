@@ -33,9 +33,8 @@ if rc != 0
     end
 end
 
-
-
 # Configure partitions
+puts CONF_PARTITIONS
 
 # Install basic system
 # Install boot loader

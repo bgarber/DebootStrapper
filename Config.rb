@@ -14,18 +14,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ################################################################################
-# This file contains a module that controls every option for the installation  #
-# process. MODIFY IT CAREFULLY!                                                #
+# This file contains global constants that controls every option for the       #
+# installation process. MODIFY IT CAREFULLY!                                   #
 ################################################################################
 
-module DebStrapConfig
-    PARTITIONS = [
-        "root" => "sda1",
-        "swap" => "sda2",
-        "home" => "sda3"
-    ]
-    BOOTLOADER = "grub2"
-    NET_MAN = "wicd"
-    OPT_PACK = "xfce4"
-end
+CONF_PARTITIONS = {
+                   :root => ["sda1", "ext4"],
+                   :swap => ["sda2", "swap"],
+                   :home => ["sda3", "ext4"],
+                  }
+CONF_BOOTLOADER = "grub2"
+CONF_NET_MAN    = "wicd"
+CONF_OPT_PACK   = "xfce4"
 
