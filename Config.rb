@@ -1,4 +1,4 @@
-# Copyright    2012        Bryan Garber da Silva
+# Copyright    2012-2013        Bryan Garber da Silva
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,27 +13,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+################################################################################
+# This file contains a module that controls every option for the installation  #
+# process. MODIFY IT CAREFULLY!                                                #
+################################################################################
 
-class Config
-    def initialize (conf)
-        cfg = File.open(conf) { |handle|
-            handle.each_line { |line|
-                line_array = line.split(/=/)
-                case line
-                    when /^INSTALL_TOOLS/
-                        if line_array[1].downcase.strip == "yes" or
-                           line_array[1].downcase.strip == "y" then
-                            @install_tools = true
-                        else
-                            @install_tools = false
-                        end
-                    when /^BOOTLOADER/
-                        @bootloader = line_array[1].strip
-                    else
-                        puts "Unknown sequence of characters: #{line}"
-                end
-            }
-        }
-    end
+module DebStrapConfig
+    PARTITIONS = [
+        "root" => "sda1",
+        "swap" => "sda2",
+        "home" => "sda3"
+    ]
+    BOOTLOADER = "grub2"
+    NET_MAN = "wicd"
+    OPT_PACK = "xfce4"
 end
 

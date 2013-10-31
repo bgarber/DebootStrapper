@@ -15,46 +15,45 @@
 
 # This is the main function for running the DebootStrapper.
 
+require './Config'
 
 class Executor
-    def initialize (c)
-        @config = c
+    def initialize ()
     end
 
     def ask_yes_no (question)
-        puts "#{question} [Y/n] "
+        print "#{question} [Y/n] "
         answer = gets.downcase
         if answer == "" or answer == "y" then
-            yield(true)
+            return true
         else
-            yield(false)
+            return false
         end
     end
 
-    def install (pkg)
-        %x[apt-get install #{pkg}]
-        return %x[echo $?]
-    end
-
-    def call_cmd (cmd)
+    def exec_cmd (cmd)
         %x[ #{cmd} ]
         return %[echo $?]
     end
 
+    def install (pkg)
+        return exec_cmd("apt-get install #{pkg}")
+    end
+
     def check_debootstrap ()
-        last_rc = call_cmd("debootstrap --help > /dev/null")
-        if last_rc == 0 then
-            if @config.install_tools then
-                install("debootstrap")
-            else
-                if ask_yes_no("The debootstrap tool wasn't found. Should I install it?") then
-                    last_rc = install('debootstrap')
-                    if last_rc then
-                        puts "Failed to get debootstrap, returning..."
-                        return ERROR
-                    end
+        last_rc = exec_cmd("debootstrap --help > /dev/null 2>&1")
+        if last_rc != 0 then
+            if ask_yes_no("Debootstrap not found. Install it now?") then
+                last_rc = install('debootstrap')
+                if last_rc != 0 then
+                    puts "Failed to get debootstrap, returning..."
+                    return false
                 end
             end
         end
+
+        return true
     end
+
+    private :ask_yes_no, :exec_cmd, :install
 end

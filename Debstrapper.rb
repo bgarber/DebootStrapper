@@ -1,4 +1,4 @@
-# Copyright    2012        Bryan Garber da Silva
+# Copyright    2012-2013        Bryan Garber da Silva
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,16 +15,14 @@
 
 # This is the main function for running the DebootStrapper.
 
-require 'Executor'
-
-SUCCESS = 0
-ERROR   = 1
+require './Executor'
 
 exec = Executor.new
 
 # Check for debootstrap
-exec.check_debootstrap
-
+if not exec.check_debootstrap then
+    exit 1
+end
 
 # Configure the partitions
 # Install basic system
