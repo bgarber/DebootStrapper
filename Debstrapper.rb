@@ -15,16 +15,28 @@
 
 # This is the main function for running the DebootStrapper.
 
-require './Executor'
-
-exec = Executor.new
+load 'Executor.rb'
+load 'Config.rb'
 
 # Check for debootstrap
-if not exec.check_debootstrap then
-    exit 1
+rc = Exec.exec_cmd("debootstrap --help > /dev/null 2>&1")
+if rc != 0
+    if Exec.ask_yes_no("Debootstrap not found. Install it now?")
+        rc = Exec.install('debootstrap')
+        if rc != 0
+            puts "Failed to get debootstrap, returning..."
+            exit 1
+        end
+    else
+        puts "No debootstrap, impossible to proceed."
+        exit 1
+    end
 end
 
-# Configure the partitions
+
+
+# Configure partitions
+
 # Install basic system
 # Install boot loader
 # Configure system network and fstab
