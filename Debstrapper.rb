@@ -109,6 +109,8 @@ end
 
 # install kernel
 # install boot loader
+
+
 # Configure system network and fstab
 # Create users
 # Install extra-packages
