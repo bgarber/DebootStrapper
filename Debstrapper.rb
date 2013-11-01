@@ -15,10 +15,14 @@
 
 # This is the main function for running the DebootStrapper.
 
-load 'Executor.rb'
-load 'Config.rb'
+$LOAD_PATH.unshift File.dirname(__FILE__)
 
+require 'Executor'
+require 'Config'
+
+#################################################################################
 # Check for debootstrap
+#################################################################################
 rc = Exec.exec_cmd("debootstrap --help > /dev/null 2>&1")
 if rc != 0
     if Exec.ask_yes_no("Debootstrap not found. Install it now?")
@@ -33,11 +37,78 @@ if rc != 0
     end
 end
 
+#################################################################################
 # Configure partitions
-puts CONF_PARTITIONS
+#################################################################################
 
+# root partition
+root_dev = "/dev/#{CONF_PARTITIONS[:root][0]}" unless CONF_PARTITIONS[:root][0].empty?
+root_fs  = CONF_PARTITIONS[:root][1]
+root_lbl = CONF_PARTITIONS[:root][2]
+
+if root_dev.nil? or root_fs.empty?
+    puts "The conf for the root partition must not be empty."
+    exit 1
+end
+
+if Exec.conf_partition(root_dev, root_fs, root_lbl) != 0
+    puts "Failed to create root partition."
+    exit 1
+end
+
+# swap partition
+swap = "/dev/#{CONF_PARTITIONS[:swap][0]}" unless CONF_PARTITIONS[:swap][0].empty?
+if swap.nil?
+    puts "No swap partition... But Ok, continuing..."
+else
+    if Exec.exec_cmd("mkswap #{swap}") != 0
+        puts "Could not create swap partition!"
+        exit 1
+    end
+
+    if Exec.exec_cmd("swapon #{swap}") != 0
+        puts "Failed to activate swap partition..."
+        exit 1
+    end
+end
+
+# home partition
+home_dev = "/dev/#{CONF_PARTITIONS[:root][0]}" unless CONF_PARTITIONS[:home][0].empty?
+home_fs  = CONF_PARTITIONS[:home][1]
+home_lbl = CONF_PARTITIONS[:home][2]
+
+if home_dev.nil?
+    puts "No home partition. Keeping everything on the same partition."
+else
+    if home_fs.nil? or home_fs.empty?
+        puts "No file system specified for home partition."
+        exit 1
+    end
+
+    if Exec.conf_partition(root_dev, root_fs, root_lbl) != 0
+        puts "Failed to create root partition."
+        exit 1
+    end
+end
+
+#################################################################################
 # Install basic system
-# Install boot loader
+#################################################################################
+
+# mount root disk
+if Exec.exec_cmd("mount #{root_dev} #{CONF_MOUNT_ROOT_PATH}") != 0
+    puts "Could not mount root disk!"
+    exit 1
+end
+
+# exec debootstrap
+if Exec.exec_cmd("debootstrap #{CONF_DEB_VERSION} #{CONF_MOUNT_ROOT_PATH} #{CONF_REPO_URL}") != 0
+    puts "Error installing basic system. Check the configuration file."
+    exit 1
+end
+
+# install kernel
+# install boot loader
 # Configure system network and fstab
 # Create users
 # Install extra-packages

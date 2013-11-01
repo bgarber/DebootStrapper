@@ -13,19 +13,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-################################################################################
-# This file contains global constants that controls every option for the       #
-# installation process. MODIFY IT CAREFULLY!                                   #
-################################################################################
+#################################################################################
+# This file contains global constants that controls every option for the        #
+# installation process. MODIFY IT CAREFULLY!                                    #
+#################################################################################
 
-CONF_PARTITIONS  = {
-                    :root => ["sda1", "ext4"],
-                    :swap => ["sda2", "swap"],
-                    :home => ["sda3", "ext4"],
-                   }
-CONF_REPO_URL    = "http://ftp.br.debian.org/debian"
-CONF_DEB_VERSION = "jessie" # or 'testing', or any other Debian version.
-CONF_BOOTLOADER  = "grub2"
-CONF_NET_MAN     = "wicd"
-CONF_OPT_PACK    = "xfce4"
+CONF_PARTITIONS = {
+    :root => ["sda1", "ext4"],
+    :swap => ["sda2", "swap"],
+    :home => ["sda3", "ext4"],
+}
+CONF_MOUNT_ROOT_PATH = "/mnt"
+CONF_REPO_URL        = "http://ftp.br.debian.org/debian"
+CONF_DEB_VERSION     = "jessie" # or 'testing', or any other Debian version.
+CONF_BOOTLOADER      = "grub2"
+CONF_NET_MAN         = "wicd"
+CONF_OPT_PACK        = "xfce4"
+CONF_EXEC_TASKSEL    = false    # if we should exec tasksel after installation
 

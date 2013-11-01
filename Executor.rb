@@ -32,7 +32,22 @@ module Exec
     end
 
     def Exec.install (pkg)
-        return exec_cmd("apt-get install #{pkg}")
+        return Exec.exec_cmd("apt-get install #{pkg}")
+    end
+
+    def Exec.conf_partition dev, fs, lbl)
+        mkfs_cmd = ""
+        if lbl.nil? or lbl.empty?
+            mkfs_cmd = "mke2fs -t #{fs} #{dev}"
+        else
+            mkfs_cmd = "mke2fs -t #{fs} -L #{lbl} #{dev}"
+        end
+
+        return Exec.exec_cmd(mkfs_cmd)
+    end
+
+    def Exec.chroot (path, cmd)
+        return Exec.exec_cmd("chroot #{path} /bin/bash -c #{cmd}")
     end
 end
 
