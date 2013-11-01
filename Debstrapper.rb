@@ -23,7 +23,7 @@ require 'Config'
 #################################################################################
 # Check for debootstrap
 #################################################################################
-rc = Exec.exec_cmd("debootstrap --help > /dev/null 2>&1")
+rc = Exec.command("debootstrap --help > /dev/null 2>&1")
 if rc != 0
     if Exec.ask_yes_no("Debootstrap not found. Install it now?")
         rc = Exec.install('debootstrap')

@@ -26,7 +26,7 @@ module Exec
         end
     end
 
-    def Exec.exec_cmd (cmd)
+    def Exec.command (cmd)
         %x[ #{cmd} ]
         return %[echo $?]
     end
@@ -35,7 +35,7 @@ module Exec
         return Exec.exec_cmd("apt-get install #{pkg}")
     end
 
-    def Exec.conf_partition dev, fs, lbl)
+    def Exec.conf_partition (dev, fs, lbl)
         mkfs_cmd = ""
         if lbl.nil? or lbl.empty?
             mkfs_cmd = "mke2fs -t #{fs} #{dev}"
