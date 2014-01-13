@@ -73,7 +73,7 @@ else
 end
 
 # home partition
-home_dev = "/dev/#{CONF_PARTITIONS[:root][0]}" unless CONF_PARTITIONS[:home][0].empty?
+home_dev = "/dev/#{CONF_PARTITIONS[:home][0]}" unless CONF_PARTITIONS[:home][0].empty?
 home_fs  = CONF_PARTITIONS[:home][1]
 home_lbl = CONF_PARTITIONS[:home][2]
 
@@ -85,7 +85,7 @@ else
         exit 1
     end
 
-    if Exec.conf_partition(root_dev, root_fs, root_lbl) != 0
+    if Exec.conf_partition(home_dev, home_fs, home_lbl) != 0
         puts "Failed to create root partition."
         exit 1
     end
@@ -107,7 +107,19 @@ if Exec.exec_cmd("debootstrap #{CONF_DEB_VERSION} #{CONF_MOUNT_ROOT_PATH} #{CONF
     exit 1
 end
 
+if Exec.chroot("apt-get update") != 0
+    puts "Error updating repositories... Aborting!"
+    exit 1
+end
+
 # install kernel
+linux_kernel = "linux-image-#{CONF_LINUX_ARCH}"
+if Exec.chroot("apt-get -y install #{linux_kernel}") != 0
+    puts "Error installing linux kernel! Check options:"
+    Exec.chroot("apt-cache search linux-image")
+    exit 1
+end
+
 # install boot loader
 
 

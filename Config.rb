@@ -26,6 +26,7 @@ CONF_PARTITIONS = {
 CONF_MOUNT_ROOT_PATH = "/mnt"
 CONF_REPO_URL        = "http://ftp.br.debian.org/debian"
 CONF_DEB_VERSION     = "jessie" # or 'testing', or any other Debian version.
+CONF_LINUX_ARCH      = "686"
 CONF_BOOTLOADER      = "grub2"
 CONF_NET_MAN         = "wicd"
 CONF_OPT_PACK        = "xfce4"
